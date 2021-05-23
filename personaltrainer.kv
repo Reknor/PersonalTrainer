@@ -1,5 +1,339 @@
-MainWidget:
+#MainLoginScreen:
 
-<MainWidget>:
-    Button:
-        text: "Login"
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import NumericField prelogin
+
+# Menu screen before login
+<MainLoginScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        AnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+            BoxLayout:
+                orientation: "vertical"
+                AnchorLayout:
+                    anchor_x: "center"
+                    anchor_y: "top"
+                    Label:
+                        text: "Personal Trainer"
+                        font_size: (self.height / 60 + self.width / 120) * 6
+                AnchorLayout:
+                    #anchor_x: "center"
+                    #anchor_y: "center"
+                    size_hint: 1, .5
+                    Button:
+                        size_hint: .5, .5
+                        font_size: (self.height / 60 + self.width / 120) * 6
+                        background_color: 0, 1, 0, 1
+                        text: 'Login'
+                        on_press: root.manager.transition.direction = "down"
+                        on_press: root.manager.current = 'login'
+                AnchorLayout:
+                    anchor_x: "center"
+                    anchor_y: "center"
+                    size_hint: 1, .5
+                    Button:
+                        size_hint: .5, .5
+                        font_size: (self.height / 60 + self.width / 120) * 6
+                        background_color: 0, 1, 0, 1
+                        text: 'Register'
+                        on_press: root.manager.transition.direction = "down"
+                        on_press: root.manager.current = 'register-account'
+                AnchorLayout:
+                    anchor_x: "center"
+                    anchor_y: "center"
+                    size_hint: 1, .5
+                    Button:
+                        size_hint: .5, .5
+                        # font_size: (self.height / 15) * 6
+                        font_size: (self.height / 60 + self.width / 120) * 6
+                        background_color: 1, 0, 0, 1
+                        text: 'Exit'
+                        on_press: root.exit()
+
+# Login screen
+<LoginScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        BoxLayout:
+            id: login-info
+            padding: "10dp"
+            size_hint: 1, .2
+        GridLayout:
+            cols: 2
+            rows: 2
+            row_default_height: .2
+            size_hint: 1, .4
+            spacing: "10dp"
+            padding: "50dp"
+            Label:
+                text: "Login"
+                size_hint: .3, None
+                height: root.height / 10
+                # font_size: (self.height / 15) * 8
+                font_size: (self.height / 60 + self.width / 120) * 12
+            TextInput:
+                id: login
+                size_hint: .7, None
+                height: root.height / 10
+                multiline: False
+                font_size: (self.height / 60 + self.width / 120) * 7
+            Label:
+                text: "Password"
+                size_hint: .3, None
+                height: root.height / 10
+                font_size: (self.height / 60 + self.width / 120) * 12
+                #height: "50dp"
+            TextInput:
+                id: password
+                size_hint: .7, None
+                height: root.height / 10
+                multiline: False
+                font_size: (self.height / 60 + self.width / 120) * 7
+                #height: "50dp"
+
+        BoxLayout:
+            orientation: "vertical"
+            spacing: "5dp"
+            padding: "10dp"
+            size_hint: 1, .4
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    background_color: 0, 1, 0, 1
+                    size_hint: .6, .8
+                    text: 'Login'
+                    font_size: (self.height / 15) * 6
+                    on_press: root.login()
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    background_color: 1, 0, 0, 1
+                    size_hint: .6, .8
+                    text: 'Return'
+                    font_size: (self.height / 15) * 6
+                    on_press: root.manager.transition.direction = "up"
+                    on_press: root.manager.current = 'menu-login'
+
+# Register account screen
+<RegisterAccountScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        BoxLayout:
+            id: register-info
+            padding: "50dp"
+            size_hint: 1, .2
+        GridLayout:
+            cols: 2
+            rows: 2
+            row_default_height: .2
+            size_hint: 1, .4
+            spacing: "10dp"
+            padding: "50dp"
+            Label:
+                text: "Login"
+                size_hint: .3, None
+                height: root.height / 10
+                # font_size: (self.height / 15) * 8
+                font_size: (self.height / 60 + self.width / 120) * 12
+            TextInput:
+                id: login-create
+                size_hint: .7, None
+                height: root.height / 10
+                multiline: False
+                font_size: (self.height / 60 + self.width / 120) * 7
+            Label:
+                text: "Password"
+                size_hint: .3, None
+                height: root.height / 10
+                font_size: (self.height / 60 + self.width / 120) * 12
+                #height: "50dp"
+            TextInput:
+                id: password-create
+                size_hint: .7, None
+                height: root.height / 10
+                multiline: False
+                font_size: (self.height / 60 + self.width / 120) * 7
+                #height: "50dp"
+
+        BoxLayout:
+            orientation: "vertical"
+            spacing: "5dp"
+            padding: "10dp"
+            size_hint: 1, .4
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    background_color: 0, 1, 0, 1
+                    size_hint: .6, .8
+                    text: 'Register'
+                    font_size: (self.height / 15) * 6
+                    on_press: root.register()
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    background_color: 1, 0, 0, 1
+                    size_hint: .6, .8
+                    text: 'Return'
+                    font_size: (self.height / 15) * 6
+                    on_press: root.manager.transition.direction = "up"
+                    on_press: root.manager.current = 'menu-login'
+
+# Register user screen
+<RegisterUserScreen>:
+    BoxLayout
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        # To display errors
+        BoxLayout:
+            size_hint: 1, .2
+            id: register-user-info
+            padding: "20dp"
+        GridLayout:
+            size_hint: 1, .6
+            padding: ("20dp", "20dp", "20dp", 0)
+            spacing: "10dp"
+            cols: 2
+            Label:
+                font_size: (self.height / 60 + self.width / 120) * 7
+                text: "Name"
+            TextInput:
+                id: name-create
+                font_size: (self.height / 60 + self.width / 120) * 7
+            Label:
+                font_size: (self.height / 60 + self.width / 120) * 7
+                text: "Weight (kg)"
+            NumericField:
+                id: weight-create
+                allowed_len: 3
+                font_size: (self.height / 60 + self.width / 120) * 7
+            Label:
+                font_size: (self.height / 60 + self.width / 120) * 7
+                text: "Height (cm)"
+            NumericField:
+                id: height-create
+                allowed_len: 3
+                font_size: (self.height / 60 + self.width / 120) * 7
+        BoxLayout:
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            padding: ("10dp", 0, "10dp", 0)
+            size_hint: .8, .4
+            Label:
+                font_size: (self.height / 60 + self.width / 120) * 8
+                text: "male"
+            CheckBox:
+                id: malebox
+                color: 1, 0, 0
+                active: True
+                on_active: active = not malebox.active
+                on_active: femalebox.active = not malebox.active
+                # canvas:
+                    # Color:
+                        # rgb: 0, 1, 0
+                    # Rectangle:
+                        # pos: malebox.center_x, malebox.center_y
+                        # size: self.size
+            Label:
+                font_size: (self.height / 60 + self.width / 120) * 8
+                text: "female"
+            CheckBox
+                id: femalebox
+                color: 1, 0, 0
+                active: not root.male_box_active
+                on_active: active = not femalebox.active
+                on_active: malebox.active = not femalebox.active
+        BoxLayout:
+            padding: ("10dp", 0, "10dp", 0)
+            size_hint: .8, .2
+            pos_hint_x: root.center_x
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            Label:
+                size_hint: .3, 1
+                font_size: (self.height / 60 + self.width / 120) * 16
+                text: "Date"
+            BoxLayout:
+                NumericField:
+                    id: day-create
+                    allowed_len: 2
+                    size_hint: .5, 1
+                    font_size: (self.height / 60 + self.width / 40) * 12
+                Label:
+                    size_hint: .2, 1
+                    font_size: (self.height / 60 + self.width / 120) * 24
+                    text: "/"
+                NumericField:
+                    id: month-create
+                    allowed_len: 2
+                    size_hint: .5, 1
+                    font_size: (self.height / 60 + self.width / 40) * 12
+                Label:
+                    size_hint: .2, 1
+                    font_size: (self.height / 60 + self.width / 120) * 24
+                    text: "/"
+                NumericField:
+                    id: year-create
+                    allowed_len: 4
+                    size_hint: 1, 1
+                    font_size: (self.height / 60 + self.width / 80) * 12
+        BoxLayout:
+            size_hint: 1, .3
+            padding: (0, "20dp", 0, 0)
+            Button:
+                background_color: 0, 1, 0, 1
+                font_size: (self.height / 60 + self.width / 120) * 6
+                text: "Register"
+                on_press: root.register()
+            Button:
+                background_color: 1, 0, 0, 1
+                font_size: (self.height / 60 + self.width / 120) * 6
+                text: "Cancel"
+
+
+# Main menu screen
+<MainMenuScreen>:
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        BoxLayout:
+            orientation: "vertical"
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    text: "Workouts"
+                    font_size: (self.height / 15) * 6
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    text: "Settings"
+                    font_size: (self.height / 15) * 6
+            AnchorLayout:
+                anchor_x: "center"
+                anchor_y: "center"
+                Button:
+                    text: "Exit"
+                    font_size: (self.height / 15) * 6

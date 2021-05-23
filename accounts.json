@@ -1,0 +1,10 @@
+{
+  "bartek": {
+    "login": "bartek",
+    "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
+  },
+  "konrad": {
+    "login": "konrad",
+    "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
+  }
+}
