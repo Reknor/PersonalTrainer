@@ -436,7 +436,8 @@
                 active: False
                 disabled: True
                 background_color: 0/255, 0/255, 0/255
-            Label:
+            BackgroundLabel:
+                background_color: 50/255, 50/255, 50/255, 1
                 text: root.timer_prop
                 font_name: "fonts/Lcd.ttf"
                 font_size: 40
@@ -448,9 +449,10 @@
         ScrollView:
             bar_width: 20
             BoxLayout:
-                #size_hint: 1, None
+                id: exercise-content
+                size_hint: 1, None
                 spacing: "40dp"
-                #height: self.minimum_height
+                height: self.minimum_height
                 orientation: "vertical"
 
         BoxLayout:
@@ -458,6 +460,7 @@
             Button:
                 text: "Cancel"
                 on_press: root.manager.transition.direction = "right"
+                on_press: root.stop_timer()
                 on_press: root.manager.current = "workouts"
                 background_color: 1, 0, 0, 1
             Button:
@@ -467,8 +470,7 @@
                 background_color: 0/255, 0/255, 0/255
             Button:
                 text: "Next"
-                on_press: root.manager.transition.direction = "left"
-                on_press: root.manager.current = "exercise"
+                on_press: root.next_exercise(None)
                 background_color: 0, 1, 0, 1
 
 <ProfileScreen>:

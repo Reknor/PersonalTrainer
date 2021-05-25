@@ -13,6 +13,8 @@ from functools import partial
 import os
 from workouts import *
 
+os.add_dll_directory("C:\Program Files\VideoLAN\VLC")
+
 # Dictionary of all exercises, every exercise has unique name which is a key in dictionary
 all_exercises = {}
 # Dictionary of all workouts, every workout has unique name which is a key in dictionary
@@ -248,24 +250,58 @@ class WorkoutDisplay(BoxLayout):
 
 # Displays current exercise
 class ExerciseScreen(Screen):
-    __workout = None
-    __diff = 0
-    __ex_count = 0
-    __current_ex = 0
-    __sound = None
+    __workout = None  # selected workout
+    __diff = 0  # difficulty level
+    __ex_count = 0  # number of exercises
+    __current_ex = 0  # current exercise index
+    __sets_left = 0  # number of sets left
+    __sets_break = 0  # break between sets
 
     timer_prop = StringProperty("10")
     timer_val = 10
     counter_event = None
 
+    __sound = None
+
     def __init__(self, workout, diff, **kwargs):
         super().__init__(**kwargs)
+
         self.__workout = workout
         self.__diff = diff
         self.__ex_count = len(workout.exercises(diff))
-        self.start_counter(70)
-        self.__sound = vlc.MediaPlayer("countdown10.mp3")
-        self.__sound.play()
+        self.__sets_left = workout.sets
+        self.__sets_break = workout.sets_break
+        self.__sound = vlc.MediaPlayer("countdown.mp3")
+        self.next_exercise(None)
+
+    def start_exercise(self, time):
+        self.start_counter(time)
+
+    def next_exercise(self, dt):
+        self.ids['exercise-content'].clear_widgets()
+        self.stop_timer()
+        # End of set
+        if self.__current_ex >= self.__ex_count:
+            self.next_set()
+            return
+        exercise, time = self.__workout.exercises(self.__diff)[self.__current_ex]
+        self.display_exercise(exercise)
+        self.start_exercise(time)
+
+        self.__current_ex += 1
+
+    def next_set(self):
+        self.__sets_left -= 1
+        # End of sets
+        if self.__sets_left <= 0:
+            print("Workout finished")
+            return
+        # Reset exercises
+        self.__current_ex = 0
+        # Display break
+        exercise = all_exercises["Break"]
+        self.display_exercise(exercise)
+        self.start_exercise(self.__sets_break)
 
     def start_counter(self, value):
         self.timer_prop = self.format_time(value)
@@ -273,12 +309,20 @@ class ExerciseScreen(Screen):
         # Every second
         self.counter_event = Clock.schedule_interval(self.update_timer, 1)
 
+    # Stop timer
+    def stop_timer(self):
+        if self.counter_event is not None:
+            self.counter_event.cancel()
+        self.__sound.stop()
+
     def update_timer(self, dt):
         val = self.timer_val
         if val == 3:
             Clock.schedule_once(self.play_countdown)
         elif val == 0:
             self.counter_event.cancel()
+            self.counter_event = None
+            Clock.schedule_once(self.next_exercise)
         self.timer_val -= 1
         self.timer_prop = self.format_time(val)
 
@@ -294,8 +338,14 @@ class ExerciseScreen(Screen):
         else:
             return str(value)
 
-    def display_exercise(self):
-        pass
+    def display_exercise(self, exercise):
+        panel = self.ids["exercise-content"]
+        panel.add_widget(Label(text=""))
+        name = Label(text=exercise.name, font_size=36)
+        panel.add_widget(name)
+        if exercise.description is not None:
+            description = Label(text=exercise.description, font_size=18)
+            panel.add_widget(description)
 
 
 # Profile options, data and statistics
