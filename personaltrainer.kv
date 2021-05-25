@@ -99,6 +99,7 @@
                 size_hint: .7, None
                 height: root.height / 10
                 multiline: False
+                password: True
                 font_size: (self.height / 60 + self.width / 120) * 7
                 #height: "50dp"
 
@@ -315,6 +316,12 @@
 # Main menu screen
 <MainMenuScreen>:
     AnchorLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
         anchor_x: "center"
         anchor_y: "center"
         BoxLayout:
@@ -325,15 +332,148 @@
                 Button:
                     text: "Workouts"
                     font_size: (self.height / 15) * 6
+                    size_hint: .5, .5
+                    on_press: root.manager.transition.direction = "down"
+                    on_press: root.manager.current = "workouts"
             AnchorLayout:
                 anchor_x: "center"
                 anchor_y: "center"
                 Button:
-                    text: "Settings"
+                    text: "Profile"
                     font_size: (self.height / 15) * 6
+                    size_hint: .5, .5
+                    on_press: root.manager.transition.direction = "down"
+                    on_press: root.manager.current = "profile"
             AnchorLayout:
                 anchor_x: "center"
                 anchor_y: "center"
                 Button:
                     text: "Exit"
                     font_size: (self.height / 15) * 6
+                    size_hint: .5, .5
+                    on_press: root.exit()
+
+# Background color for any widget
+<BackgroundColor@Widget>:
+    background_color: 0, 1, 0, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<BackgroundLabel@Label+BackgroundColor>:
+    size_hint: 1, 1
+
+
+
+# Screen used to choose workout
+<WorkoutsScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        BoxLayout:
+            size_hint: 1, .1
+            Button:
+                text: ""
+                active: False
+                disabled: True
+                background_color: 0/255, 0/255, 0/255
+            Spinner:
+                id: select-workout
+                text: root.selected_workout_name
+                on_text: root.change_workout(self)
+            Button:
+                text: ""
+                active: False
+                disabled: True
+                background_color: 0/255, 0/255, 0/255
+        ScrollView:
+            bar_width: 20
+            WorkoutDisplay:
+                id: workout-display
+                size_hint: 1, None
+                spacing: "40dp"
+                height: self.minimum_height
+                orientation: "vertical"
+
+        BoxLayout:
+            size_hint: 1, .1
+            Button:
+                text: "Return"
+                on_press: root.manager.transition.direction = "up"
+                on_press: root.manager.current = "menu-main"
+                background_color: 1, 0, 0, 1
+            Spinner:
+                id: select-difficulty
+                text: root.selected_workout_diff
+                values: root.difficulties_list
+                on_text: root.change_difficulty(self)
+            Button:
+                text: "Start"
+                on_press: root.manager.transition.direction = "left"
+                on_press: root.start_workout()
+                background_color: 0, 1, 0, 1
+
+# Current exercise
+<ExerciseScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        BoxLayout:
+            size_hint: 1, .1
+            Button:
+                text: ""
+                active: False
+                disabled: True
+                background_color: 0/255, 0/255, 0/255
+            Label:
+                text: root.timer_prop
+                font_name: "fonts/Lcd.ttf"
+                font_size: 40
+            Button:
+                text: ""
+                active: False
+                disabled: True
+                background_color: 0/255, 0/255, 0/255
+        ScrollView:
+            bar_width: 20
+            BoxLayout:
+                #size_hint: 1, None
+                spacing: "40dp"
+                #height: self.minimum_height
+                orientation: "vertical"
+
+        BoxLayout:
+            size_hint: 1, .1
+            Button:
+                text: "Cancel"
+                on_press: root.manager.transition.direction = "right"
+                on_press: root.manager.current = "workouts"
+                background_color: 1, 0, 0, 1
+            Button:
+                text: ""
+                active: False
+                disabled: True
+                background_color: 0/255, 0/255, 0/255
+            Button:
+                text: "Next"
+                on_press: root.manager.transition.direction = "left"
+                on_press: root.manager.current = "exercise"
+                background_color: 0, 1, 0, 1
+
+<ProfileScreen>:
+    Button:
+        text: "Menu"
+        font_size: (self.height / 15) * 6
+        on_press: root.manager.transition.direction = "up"
+        on_press: root.manager.current = "menu-main"
