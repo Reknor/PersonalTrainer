@@ -1,9 +1,12 @@
 import json
 
 from user import User, Account
+from workouts import Exercise, Workout, Break
 
 DEFAULT_ACCOUNTS_FILE = "accounts.json"
-DEFAULT_USER_DATA = "users.json"
+DEFAULT_USER_FILE = "users.json"
+DEFAULT_EXERCISES_FILE = "exercises.json"
+DEFAULT_WORKOUTS_FILE = "workouts.json"
 
 
 # Returns dictionary (login, password)
@@ -22,14 +25,8 @@ def read_accounts(filepath=DEFAULT_ACCOUNTS_FILE):
         return None
 
 
-# Save accounts dictionary as json
-def save_accounts(filepath=DEFAULT_ACCOUNTS_FILE):
-    with open(filepath, mode='w', encoding="utf8") as f:
-        pass
-
-
 # Returns user data for given account
-def read_user(account, filepath=DEFAULT_USER_DATA):
+def read_user(account, filepath=DEFAULT_USER_FILE):
     try:
         with open(filepath, mode='r', encoding="utf8") as f:
             data = json.load(f)
@@ -46,3 +43,34 @@ def read_user(account, filepath=DEFAULT_USER_DATA):
             return None
     except (IOError, FileNotFoundError, OSError, ValueError):
         return None
+
+
+# Read all exercises
+def read_exercises(filepath=DEFAULT_EXERCISES_FILE):
+    try:
+        with open(filepath, mode='r', encoding="utf8") as f:
+            exercises = {}
+            data = json.load(f)
+            for d in data['exercises']:
+                if d['name'].lower().startswith("break"):
+                    e = Break(d)
+                else:
+                    e = Exercise(d)
+                exercises[e.name] = e
+            return exercises
+    except (IOError, FileNotFoundError, OSError, ValueError):
+        return None
+
+# Read all workouts, remember to call read_exercises before or workout initialization will fail
+def read_workouts(filepath=DEFAULT_WORKOUTS_FILE):
+    try:
+        with open(filepath, mode='r', encoding="utf8") as f:
+            workouts = {}
+            data = json.load(f)
+            for d in data['workouts']:
+                w = Workout(d)
+                workouts[w.name] = w
+            return workouts
+    except (IOError, FileNotFoundError, OSError, ValueError):
+        return None
+

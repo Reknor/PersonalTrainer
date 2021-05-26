@@ -1,6 +1,6 @@
-from tkinter import Tk
 
 import vlc
+
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -10,44 +10,18 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from functools import partial
+
 import os
+
+import workouts
 from workouts import *
 
+# vlc path
 os.add_dll_directory("C:\Program Files\VideoLAN\VLC")
-
-# Dictionary of all exercises, every exercise has unique name which is a key in dictionary
-all_exercises = {}
-# Dictionary of all workouts, every workout has unique name which is a key in dictionary
-all_workouts = {}
-
-
-# Create all exercises
-def initialize_exercises():
-    all_exercises["Break"] = Break("Break", None, None)
-
-    all_exercises["Basic push ups"] = Exercise("Basic push ups", "", None)
-    all_exercises["Knee plank-ups"] = Exercise("Knee plank-ups", "", None)
-    all_exercises["Side step push ups"] = Exercise("Side step push ups", "", None)
-    all_exercises["Prowler push ups"] = Exercise("Prowler push ups", "", None)
-    all_exercises["Cliffhanger push ups"] = Exercise("Cliffhanger push ups", "", None)
-
-    all_exercises["Basic pull ups"] = Exercise("Basic pull ups", "", None)
-    all_exercises["Chin ups"] = Exercise("Chin ups", "", None)
-    all_exercises["1/2 pull ups"] = Exercise("1/2 pull ups", "", None)
-    all_exercises["Hanging bat pull ups"] = Exercise("Hanging bat pull ups", "", None)
-    all_exercises["Angled pull ups"] = Exercise("Angled pull ups", "", None)
-    all_exercises["Commando pull ups"] = Exercise("Commando  pull ups", "", None)
-    all_exercises["Spiderman pull ups"] = Exercise("Spiderman  pull ups", "", None)
-    all_exercises["Switch grip pull ups"] = Exercise("Switch grip pull ups", "", None)
-    all_exercises["Front lever pull ups"] = Exercise("Front lever pull ups", "", None)
-    all_exercises["One arm pull ups"] = Exercise("One arm pull ups", "", None)
-    all_exercises["Plyo pull ups"] = Exercise("Plyo pull ups", "", None)
-
 
 # Create all workouts
 def initialize_workouts():
     # First initialize exercises
-    initialize_exercises()
     # Difficulties aliases
     b = Workout.DIFF_BEGINNER
     a = Workout.DIFF_ADVANCED
@@ -95,6 +69,9 @@ class MainMenuScreen(Screen):
 
     def __init__(self, user, **kwargs):
         super().__init__(**kwargs)
+
+        # Initialize all workouts when screen loads
+        workouts.initialize_data()
         self.__user = user
         Clock.schedule_once(partial(self.__create_child_screens, user), 1)
 
@@ -130,9 +107,6 @@ class WorkoutsScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        # Initialize all workouts when screen loads
-        initialize_workouts()
-
         # Select first workout by default
         self.select_default_workout()
 
@@ -162,12 +136,13 @@ class WorkoutsScreen(Screen):
 
     # Select first workout and update text
     def select_default_workout(self):
+        all_workouts = workouts.all_workouts
         self.selected_workout = all_workouts[list(all_workouts)[0]]
         self.selected_workout_name = self.selected_workout.name
 
     # When user changes workout in dropdown menu
     def change_workout(self, widget):
-        self.selected_workout = all_workouts[widget.text]
+        self.selected_workout = workouts.all_workouts[widget.text]
         self.update_difficulties()
         # Change workout display
         workout_display = self.ids["workout-display"]
@@ -211,15 +186,19 @@ class WorkoutDisplay(BoxLayout):
         sets_box.add_widget(Label(text="", size_hint=(1, 1), font_size=18))
         sets_box.add_widget(Label(text="Sets : ", size_hint=(1, 1), font_size=18))
         # Label displaying value
-        sets_label = Label(text=str(workout.sets), size_hint=(1, 1), font_size=18, halign="left")
+        sets_label = Label(text=str(workout.sets_count), size_hint=(1, 1), font_size=18, halign="left")
         sets_box.add_widget(sets_label)
         sets_label.bind(size=sets_label.setter('text_size'))
 
         time_box = BoxLayout(size_hint=(1, 1))
-        time_box.add_widget(Label(text="Time: ", size_hint=(1, 1), font_size=18))
-        time_label = Label(text=str(workout.sets_break), size_hint=(1, 1), font_size=18, halign="left")
+        time_box.add_widget(Label(text="Breaks: ", size_hint=(1, 1), font_size=18))
+        # Breaks for all sets for given difficulty
+        breaks_text = ""
+        for b in workout.get_breaks(difficulty):
+            breaks_text += str(b) + "s, "
+        breaks_text = breaks_text[:len(breaks_text)-2]
+        time_label = Label(text=str(breaks_text), size_hint=(1, 1), font_size=18, halign="left")
         time_box.add_widget(time_label)
-
         time_label.bind(size=time_label.setter('text_size'))
 
         sets_box.add_widget(Label(text="", size_hint=(1, 1), font_size=18))
@@ -229,23 +208,25 @@ class WorkoutDisplay(BoxLayout):
         self.add_widget(sets_layout)
         self.add_widget(Label(text=""))
         # Exercises information
-        for i in range(0, len(exercises)):
-            # Row box
-            exercise_row = BoxLayout()
-            # Picture placeholder
-            exercise_row.add_widget(Label(text="", size_hint=(None, 1), width=dp(100), font_size=18))
+        for j in range(0, len(exercises)):
 
-            ex = exercises[i]
-            # Format output depending on type
-            if type(ex[0]) is Break:
-                label = Label(text="-            " + str(ex[1]) + "s    " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
-            else:
-                label = Label(text=str(int(i/2)+1) + ".    " + str(ex[1]) + "s   " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+            for i in range(0, len(exercises[j])):
+                # Row box
+                exercise_row = BoxLayout()
+                # Picture placeholder
+                exercise_row.add_widget(Label(text="", size_hint=(None, 1), width=dp(100), font_size=18))
 
-            label.bind(size=label.setter('text_size'))
-            exercise_row.add_widget(label)
-            self.add_widget(exercise_row)
-        self.add_widget(Label(text=""))
+                ex = exercises[j][i]
+                # Format output depending on type
+                if type(ex[0]) is Break:
+                    label = Label(text="-            " + str(ex[1]) + "s    " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+                else:
+                    label = Label(text=str(int(i/2)+1) + ".    " + str(ex[1]) + "s   " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+
+                label.bind(size=label.setter('text_size'))
+                exercise_row.add_widget(label)
+                self.add_widget(exercise_row)
+            self.add_widget(Label(text=""))
 
 
 # Displays current exercise
@@ -269,7 +250,7 @@ class ExerciseScreen(Screen):
         self.__workout = workout
         self.__diff = diff
         self.__ex_count = len(workout.exercises(diff))
-        self.__sets_left = workout.sets
+        self.__sets_left = workout.sets_count
         self.__sets_break = workout.sets_break
         self.__sound = vlc.MediaPlayer("countdown.mp3")
         self.next_exercise(None)

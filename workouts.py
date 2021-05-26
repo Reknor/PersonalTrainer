@@ -1,13 +1,21 @@
-class Exercise:
+# Contains all available exercises, every exercise has unique name which is a key in dictionary
+import filehandler
 
+all_exercises = {}
+# Contains all available workouts, every workout has unique name which is a key in dictionary
+all_workouts = {}
+
+
+class Exercise:
     __name: str
     __description: str
     __img: str  # Relative path to image
 
-    def __init__(self, name, description, img):
-        self.__name = name
-        self.__description = description
-        self.__img = img
+    # Initialize exercise from json object
+    def __init__(self, json):
+        self.__name = json['name']
+        self.__description = json['description']
+        self.__img = json['img']
 
     def __str__(self):
         return self.name
@@ -58,26 +66,60 @@ class Workout:
     DIFF_PRO = 3
 
     __name: str
-    __sets: int  # How many times all exercises are repeated
-    __sets_break: int  # Time between sets in seconds
+    __difficulty: list[int]  # List of available difficulties for this workout
+    __sets_count: int  # How many times all exercises are repeated
     __description: str
     # List of  pairs <exercise, duration> lists, each list contains exercises for one difficulty level, 0 - easiest
-    __exercises: [[]]
+    #__exercises: [[]]
 
-    def __init__(self, name, sets, s_break, description):
-        self.__name = name
-        self.__sets = sets
-        self.__sets_break = s_break
-        self.__description = description
-        self.__exercises = [[]]
+    # Dictionary with 2 key types:
+    # sets_breaks_n - list of ints (break between sets in seconds), n is difficulty number
+    # sets_n - list of list of pairs <exercise, duration>, n is difficulty number
+    __exercises = {}
+
+    # Initialize workouts from json object
+    def __init__(self, json):
+        self.__name = json['name']
+        self.__difficulty = json['difficulty']
+        self.__sets_count = len(self.__difficulty)
+
+        # Read breaks and exercises information
+        for diff in self.__difficulty:
+            b = 'sets_breaks_' + str(diff)
+            self.__exercises[b] = json[b]
+
+            # For every set
+            set_list = []
+            for ex_set in json['sets_' + str(diff)]:
+                ex_list = []
+                # For every exercise
+                for i in range(0, len(ex_set), 2):
+                    # Map exercise name with exercise and duration
+                    pair = (all_exercises[ex_set[i]], ex_set[i+1])
+                    # Add exercise and time to set cycle
+                    ex_list.append(pair)
+                # Add set cycle to set
+                set_list.append(ex_list)
+            # Add set to difficulty
+            self.__exercises['sets_' + str(diff)] = set_list
+
+        self.__description = json['description']
 
     def __str__(self):
-        text = self.name + " sets: " + str(self.sets) + "\n"
-        for exercises_list in self.all_exercises:
+        text = self.name + " sets: " + str(self.sets_count) + "\n"
+        i = 0
+        for k in self.all_exercises.keys():
+            if i % 2 == 0:
+                text += "Breaks: "
+            exercises_list = self.all_exercises[k]
             for exercise in exercises_list:
                 text += str(exercise) + ", "
             text += "\n"
+            i += 1
         return text
+
+    def __repr__(self):
+        return str(self)
 
     @property
     def name(self):
@@ -90,23 +132,30 @@ class Workout:
         self.__name = new_name
 
     @property
-    def sets(self):
-        return self.__sets
+    def sets_count(self):
+        return self.__sets_count
 
-    @sets.setter
-    def sets(self, new_sets: int):
+    @sets_count.setter
+    def sets_count(self, new_sets: int):
         if new_sets <= 0:
             raise ValueError("Number of sets must be positive")
-        self.__sets = new_sets
+        self.__sets_count = new_sets
+
+    def get_break(self,difficulty, set_num):
+        return self.__exercises["sets_breaks_" + str(difficulty)][set_num]
+
+    def get_breaks(self, difficulty):
+        return self.__exercises["sets_breaks_" + str(difficulty)]
 
     @property
-    def sets_break(self):
-        return self.__sets_break
+    def all_breaks(self):
+        breaks = []
+        for diff in self.__difficulty:
+            breaks.append(self.__exercises["sets_breaks_" + str(diff)])
+        return breaks
 
-    @sets_break.setter
-    def sets_break(self, new_break):
-        if new_break <= self.__MINIMUM_SETS_BREAK:
-            raise ValueError("Break between sets must be longer than {0}s".format(self.__MINIMUM_SETS_BREAK))
+    def sets_break(self, set_num):
+        return self.__exercises["sets_breaks_" + str(set_num)]
 
     @property
     def description(self):
@@ -121,24 +170,9 @@ class Workout:
         return self.__exercises
 
     def exercises(self, difficulty):
-        if difficulty >= len(self.__exercises) or difficulty < 0:
+        if difficulty not in self.__difficulty or difficulty < 0:
             return None
-        return self.__exercises[difficulty]
-
-    def add_exercise(self, difficulty, exercise, duration):
-        if difficulty >= len(self.__exercises) or difficulty < 0:
-            return False
-        if duration <= self.__MINIMUM_DURATION_LENGTH:
-            raise ValueError("Exercise duration must be greater than {0}s".format(self.__MINIMUM_DURATION_LENGTH))
-        self.__exercises[difficulty].append((exercise, duration))
-        return True
-
-    def add_difficulty_level(self):
-        # Maximum difficulty level reached
-        if len(self.__exercises) >= 4:
-            return False
-        self.__exercises.append([])
-        return True
+        return self.__exercises["sets_" + str(difficulty)]
 
     # Returns pair <value, text> describing available difficulties for workout
     def get_difficulties(self):
@@ -166,3 +200,12 @@ class Workout:
             return 2
         else:  # "Professional"
             return 3
+
+
+# Read exercises and workouts from files
+def initialize_data():
+    global all_exercises
+    global all_workouts
+    all_exercises = filehandler.read_exercises()
+    all_workouts = filehandler.read_workouts()
+    return all_exercises, all_workouts
