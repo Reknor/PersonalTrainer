@@ -1,10 +1,18 @@
 {
-  "bartek": {
-    "login": "bartek",
-    "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
-  },
-  "konrad": {
-    "login": "konrad",
-    "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
-  }
+    "bartek": {
+        "login": "bartek",
+        "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
+    },
+    "konrad": {
+        "login": "konrad",
+        "password": "$6$rounds=656000$WxMb6R/pUIJLNjyo$Kb6yzfBt5MyTEppGQee.s8ZV0PANkrwLzkzOQgXRPhmFHPMqfxzeG3zgcyWm/mfTJSzLooiw8VA9vgm/XP4Pj1"
+    },
+    "piotrek": {
+        "login": "piotrek",
+        "password": "$6$rounds=656000$Zcu23h5Nv2MU3zpE$H0LbW2/820nyf.WfthSyU8GmZgOKQax6h60rx/TLKbNhcoNa5RRP7Ep6ywIZBcDzanCSiC6FBgUT8gQB2kAHN."
+    },
+    "michal": {
+        "login": "michal",
+        "password": "$6$rounds=656000$P.tnIM2o8d8UB/eK$HLeLN00CjdaTvJF8SpZDp0HOfNHzSR.7tyO.i/M/zw3Mg7jLfsSDTScBcB..ElEJkpXRB/29thdkjgUi297kV."
+    }
 }

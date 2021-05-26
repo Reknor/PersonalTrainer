@@ -1,18 +1,34 @@
 {
-  "bar": {
-    "login": "bartek",
-    "name": "bar",
-    "gender": "True",
-    "weight": 80,
-    "height": 180,
-    "birthday": "18-02-2000"
-  },
-  "konrad": {
-    "login": "konrad",
-    "name": "konrad",
-    "gender": "True",
-    "weight": 70,
-    "height": 172,
-    "birthday": "28-08-2002"
-  }
+    "bar": {
+        "login": "bartek",
+        "name": "bar",
+        "gender": "True",
+        "weight": 80,
+        "height": 180,
+        "birthday": "18-02-2000"
+    },
+    "konrad": {
+        "login": "konrad",
+        "name": "konrad",
+        "gender": "True",
+        "weight": 70,
+        "height": 172,
+        "birthday": "28-08-2002"
+    },
+    "piotrek": {
+        "login": "piotrek",
+        "name": "piotrek",
+        "gender": "True",
+        "weight": 76,
+        "height": 172,
+        "birthday": "17-05-1999"
+    },
+    "michal": {
+        "login": "michal",
+        "name": "michal",
+        "gender": "True",
+        "weight": null,
+        "height": null,
+        "birthday": "01-01-2000"
+    }
 }

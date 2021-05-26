@@ -40,6 +40,7 @@ class Account:
         # True if encrypted password and password are identical
         return passlib.hash.sha512_crypt.verify(password, self.password)
 
+    # Check if two account's data are identical
     @staticmethod
     def verify_account(login, password, snd_login, hashed_password):
         if login != snd_login:
@@ -47,6 +48,12 @@ class Account:
         # True if encrypted password and password are identical
         return passlib.hash.sha512_crypt.verify(password, hashed_password)
 
+    # Return account data in json format
+    def to_json(self):
+        account = {"login": self.login,
+                   "password": self.password
+                   }
+        return account
 
 class User:
     def __init__(self, account):
@@ -88,7 +95,7 @@ class User:
 
     @weight.setter
     def weight(self, new_weight: float):
-        if new_weight <= 0:
+        if new_weight < 0:
             raise ValueError("Weight must be positive number")
         self.__weight = new_weight
 
@@ -98,7 +105,7 @@ class User:
 
     @height.setter
     def height(self, new_height: float):
-        if new_height <= 0:
+        if new_height < 0:
             raise ValueError("Height must be positive number")
         self.__height = new_height
 
@@ -118,6 +125,36 @@ class User:
     @date_of_birth.setter
     def date_of_birth(self, new_date):
         if User.validate_date(new_date):
-            self.__date_of_birth = new_date
+            self.__date_of_birth = datetime.strptime(new_date, "%d-%m-%Y")
         else:
             raise ValueError("Date must be valid date in format DD-MM-YYYY")
+
+    # Return user data in json format
+    def to_json(self):
+        if self.gender:
+            gender = 'True'
+        else:
+            gender = 'False'
+        d = self.date_of_birth
+        if d is None:
+            date = "01-01-2000"
+        else:
+            day = d.day
+            if day < 10:
+                day = "0" + str(day)
+            else:
+                day = str(day)
+            month = d.month
+            if month < 10:
+                month = "0" + str(month)
+            else:
+                month = str(month)
+            date = "{0}-{1}-{2}".format(day, month, d.year)
+        user = {'login': self.account.login,
+                'name': self.name,
+                'gender': gender,
+                'weight': self.weight,
+                'height': self.height,
+                'birthday': date
+                }
+        return user

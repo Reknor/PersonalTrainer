@@ -6,9 +6,8 @@ from kivy.clock import Clock
 from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
 from kivy.properties import ListProperty, StringProperty, NumericProperty
-from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.image import AsyncImage, Image
+from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from functools import partial
@@ -18,7 +17,7 @@ import os
 from kivy.uix.widget import Widget
 
 import workouts
-from workouts import Workout, Exercise, all_workouts, all_exercises, initialize_data
+from workouts import Workout
 
 # vlc path
 os.add_dll_directory("C:\Program Files\VideoLAN\VLC")
@@ -312,7 +311,6 @@ class ExerciseScreen(Screen):
         panel = self.ids["exercise-content"]
         panel.add_widget(Label(text=""))
         name = Label(text=exercise.name, font_size=36, padding=(10, 10))
-        #self.ids["exercise-scroll"].scroll_to(name)
         panel.add_widget(name)
 
         if exercise.description != "":

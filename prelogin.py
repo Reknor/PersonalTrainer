@@ -1,11 +1,10 @@
 from kivy.app import App
-from kivy.properties import NumericProperty, BooleanProperty, StringProperty
-from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import NumericProperty, BooleanProperty
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
 
+import filehandler
 from filehandler import read_user
 from personaltrainer import MainMenuScreen
 from user import *
@@ -156,6 +155,7 @@ class RegisterUserScreen(Screen):
             else:
                 self.ids.get("incorrect", 0).text = str(e)
             return
+        filehandler.save_user(self.__user)
         self.manager.add_widget(MainMenuScreen(user=self.__user, name="menu-main"))
         self.manager.current = "menu-main"
 

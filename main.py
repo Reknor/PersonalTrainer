@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-import kivy
-from kivy.app import App
 from kivy.core.window import Window
-from kivy.uix.screenmanager import ScreenManager, SlideTransition, Screen
+from kivy.uix.screenmanager import ScreenManager, SlideTransition
 
 from prelogin import *
 from filehandler import *
-from personaltrainer import MainMenuScreen
 
 
 # Entry application screen
@@ -45,13 +42,6 @@ class PersonalTrainer(App):
         screen_manager.add_widget(LoginScreen(accounts=accounts_dict, name="login"))
         # Create register account screen
         screen_manager.add_widget(RegisterAccountScreen(accounts=accounts_dict, name="register-account"))
-
-        # Temporary for testing
-        a = Account("bartek", "trudnehaslo")
-        screen_manager.add_widget(RegisterUserScreen(account=a, name="register-user"))
-        user = read_user(a)
-        screen_manager.add_widget(MainMenuScreen(user=user, name="menu-main"))
-        screen_manager.current = "menu-main"
         return screen_manager
 
 
