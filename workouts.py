@@ -172,6 +172,7 @@ class Workout:
                 total_time += e[1]
             total_time += breaks[i]
             i += 1
+        total_time -= breaks[i-1]
         return total_time
 
     # Returns pair <value, text> describing available difficulties for workout

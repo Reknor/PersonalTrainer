@@ -3,6 +3,7 @@ import vlc
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.graphics import Color, Rectangle
 from kivy.metrics import dp
 from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.anchorlayout import AnchorLayout
@@ -12,6 +13,8 @@ from kivy.uix.screenmanager import Screen
 from functools import partial
 
 import os
+
+from kivy.uix.widget import Widget
 
 import workouts
 from workouts import Workout, Exercise, all_workouts, all_exercises, initialize_data
@@ -243,6 +246,8 @@ class ExerciseScreen(Screen):
     __sets_count: int  # total number of sets
     __current_set: int  # current set
 
+    progress_max = NumericProperty(0)
+    time_passed = NumericProperty(0)
     timer_prop = StringProperty("10")
     timer_val: int
     counter_event = None
@@ -252,18 +257,19 @@ class ExerciseScreen(Screen):
     def __init__(self, workout, diff, **kwargs):
         super().__init__(**kwargs)
 
-        self.timer_val = 10
-        print(workout.get_time(diff))
-        print(workout)
         self.__workout = workout
         self.__diff = diff
         self.__current_ex = 0
         self.__current_set = 0
         self.__ex_count = len(workout.exercises(diff)[self.__current_set])
-        print(workout.exercises(diff)[0])
         self.__sets_count = workout.sets_count(diff)
+
+        self.timer_val = 10
+        self.progress_max = workout.get_time(diff)
+        self.time_passed = 0
         self.__sound = vlc.MediaPlayer("countdown.mp3")
         self.next_exercise(None)
+        self.ids["current-set"].text = "Set: " + str(self.__current_set+1) + " / " + str(self.__sets_count)
 
     def start_exercise(self, time):
         self.start_counter(time)
@@ -272,6 +278,9 @@ class ExerciseScreen(Screen):
     def next_exercise(self, dt):
         self.ids['exercise-content'].clear_widgets()
         self.stop_timer()
+
+        # Add to progress bar
+        self.time_passed += self.timer_val
         # End of set
         if self.__current_ex >= self.__ex_count:
             self.next_set()
@@ -279,27 +288,23 @@ class ExerciseScreen(Screen):
         exercise, time = self.__workout.exercises(self.__diff)[self.__current_set][self.__current_ex]
         self.display_exercise(exercise)
         self.start_exercise(time)
-        print("curr_ex: " + str(self.__current_ex))
-        print("ex_count: " + str(self.__ex_count))
-        print("cur_set: " + str(self.__current_set))
-        print(", total_sets: " + str(self.__sets_count))
         self.__current_ex += 1
 
     # Start new set, if all sets finished end workout
     def next_set(self):
         self.__current_set += 1
         # End of sets - end of workout
-        print("cur_set: " + str(self.__current_set) + ", total_sets: " + str(self.__sets_count))
         if self.__current_set >= self.__sets_count:
             print("Workout finished")
             return
         # Reset exercises
         self.__current_ex = 0
         self.__ex_count = len(self.__workout.exercises(self.__diff)[self.__current_set])
-        # Display break
-        exercise = workouts.all_exercises["Break"]
+        # Display break between sets
+        exercise = workouts.all_exercises["Break sets"]
         self.display_exercise(exercise)
         self.start_exercise(self.__workout.get_break(self.__diff, self.__current_set-1))
+        self.ids["current-set"].text = "Set: " + str(self.__current_set+1) + " / " + str(self.__sets_count)
 
     def start_counter(self, value):
         self.timer_prop = self.format_time(value)
@@ -321,9 +326,11 @@ class ExerciseScreen(Screen):
             self.counter_event.cancel()
             self.counter_event = None
             Clock.schedule_once(self.next_exercise)
+        self.time_passed += 1
         self.timer_val -= 1
         self.timer_prop = self.format_time(val)
 
+    # Wrapper function for playing counter sound
     def play_countdown(self, dt):
         self.__sound.play()
 
@@ -344,6 +351,34 @@ class ExerciseScreen(Screen):
         if exercise.description is not None:
             description = Label(text=exercise.description, font_size=18)
             panel.add_widget(description)
+
+
+# Used to display progress bar for workout
+class ProgressBox(BoxLayout):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(size=self._update_rect, pos=self._update_rect)
+        with self.canvas.before:
+            Color(78/255, 78/255, 78/255, 1)
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+
+# Used to mix in background color for any widget
+class BackgroundColor(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(size=self._update_rect, pos=self._update_rect)
+        with self.canvas.before:
+            Color(78/255, 78/255, 78/255, 1)
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
 
 # Profile options, data and statistics

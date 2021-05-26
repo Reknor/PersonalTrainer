@@ -353,7 +353,7 @@
                     on_press: root.exit()
 
 # Background color for any widget
-<BackgroundColor@Widget>:
+<BackgroundColor>:
     background_color: 0, 1, 0, 1
     canvas.before:
         Color:
@@ -362,10 +362,9 @@
             size: self.size
             pos: self.pos
 
+# Label with binded color
 <BackgroundLabel@Label+BackgroundColor>:
     size_hint: 1, 1
-
-
 
 # Screen used to choose workout
 <WorkoutsScreen>:
@@ -377,7 +376,7 @@
                 size: self.size
         orientation: "vertical"
         BoxLayout:
-            size_hint: 1, .1
+            size_hint: 1, .15
             Button:
                 text: ""
                 active: False
@@ -429,22 +428,20 @@
                 size: self.size
         orientation: "vertical"
         BoxLayout:
-            size_hint: 1, .1
-            Button:
+            size_hint: 1, .2
+            BackgroundLabel:
+                id: current-set
                 text: ""
-                active: False
-                disabled: True
                 background_color: 0/255, 0/255, 0/255
             BackgroundLabel:
                 background_color: 50/255, 50/255, 50/255, 1
                 text: root.timer_prop
                 font_name: "fonts/Lcd.ttf"
                 font_size: 40
-            Button:
-                text: ""
-                active: False
-                disabled: True
-                background_color: 0/255, 0/255, 0/255
+            ProgressBox:
+                ProgressBar:
+                    max: root.progress_max
+                    value: root.time_passed
         ScrollView:
             bar_width: 20
             BoxLayout:
