@@ -8,6 +8,7 @@ from kivy.metrics import dp
 from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import AsyncImage, Image
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from functools import partial
@@ -21,50 +22,6 @@ from workouts import Workout, Exercise, all_workouts, all_exercises, initialize_
 
 # vlc path
 os.add_dll_directory("C:\Program Files\VideoLAN\VLC")
-
-
-# Create all workouts
-def initialize_workouts():
-    # First initialize exercises
-    # Difficulties aliases
-    b = Workout.DIFF_BEGINNER
-    a = Workout.DIFF_ADVANCED
-    i = Workout.DIFF_INTERMEDIATE
-    p = Workout.DIFF_PRO
-    # Exercises alias
-    ex = all_exercises
-
-    w1 = Workout("Push ups variations", 3, 180, "No equipment needed")
-    w1.add_exercise(b, ex["Basic push ups"], 40)
-    w1.add_exercise(b, ex["Break"], 20)
-    w1.add_exercise(b, ex["Knee plank-ups"], 40)
-    w1.add_exercise(b, ex["Break"], 20)
-    w1.add_exercise(b, ex["Side step push ups"], 40)
-    w1.add_exercise(b, ex["Break"], 20)
-    w1.add_exercise(b, ex["Prowler push ups"], 40)
-    w1.add_difficulty_level()
-    w1.add_exercise(i, ex["Basic push ups"], 55)
-    w1.add_exercise(i, ex["Break"], 20)
-    w1.add_exercise(i, ex["Knee plank-ups"], 55)
-    w1.add_exercise(i, ex["Break"], 20)
-    w1.add_exercise(i, ex["Side step push ups"], 55)
-    w1.add_exercise(i, ex["Break"], 20)
-    w1.add_exercise(i, ex["Cliffhanger push ups"], 55)
-    all_workouts["Push ups variations"] = w1
-
-    w2 = Workout("Pull ups variations", 3, 300,
-                 "Workout requires pull up bar and some other equipment depending on exercise")
-    w2.add_exercise(b, ex["Basic pull ups"], 30)
-    w2.add_exercise(b, ex["Break"], 60)
-    w2.add_exercise(b, ex["1/2 pull ups"], 30)
-    w2.add_exercise(b, ex["Break"], 60)
-    w2.add_exercise(b, ex["Chin ups"], 40)
-    w2.add_exercise(b, ex["Break"], 60)
-    w2.add_exercise(b, ex["Basic push ups"], 30)
-    w2.add_exercise(b, ex["Break"], 60)
-    w2.add_exercise(b, ex["Chin ups"], 30)
-    w2.add_exercise(b, ex["Break"], 60)
-    all_workouts["Pull ups variations"] = w2
 
 
 # Main application menu
@@ -214,19 +171,20 @@ class WorkoutDisplay(BoxLayout):
         for j in range(0, len(exercises)):
             # Row box
             set_row = BoxLayout()
-            set_row.add_widget(Label(text=("Set: " + str(j + 1)), size_hint=(None, 1), width=dp(100), font_size=18))
+            set_row.add_widget(Label(text=("Set: " + str(j + 1)), size_hint=(.5, 1), font_size=18))
             self.add_widget(set_row)
             ex_num = 1
             for i in range(0, len(exercises[j])):
                 # Row box
-                exercise_row = BoxLayout()
+                exercise_row = BoxLayout(size_hint=(1, 1))
                 # Picture placeholder
-                exercise_row.add_widget(Label(text="", size_hint=(None, 1), width=dp(100), font_size=18))
+                exercise_row.add_widget(Label(text="", size_hint=(.3, 1), font_size=18))
 
                 ex = exercises[j][i]
                 # Format output depending on type
+
                 if type(ex[0]) is workouts.Break:
-                    label = Label(text="-            " + str(ex[1]) + "s    " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+                    label = Label(text="-       " + str(ex[1]) + "s    " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
                 else:
                     label = Label(text=str(ex_num) + ".    " + str(ex[1]) + "s   " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
                     ex_num += 1
@@ -239,6 +197,9 @@ class WorkoutDisplay(BoxLayout):
 
 # Displays current exercise
 class ExerciseScreen(Screen):
+    DEFAULT_COUNTDOWN_SOUND = "media/countdown.mp3"
+    DEFAULT_WORKOUT_END_SOUND = "media/end.mp3"
+
     __workout = None  # selected workout
     __diff: int  # difficulty level
     __ex_count: int  # number of exercises on each set
@@ -267,7 +228,7 @@ class ExerciseScreen(Screen):
         self.timer_val = 10
         self.progress_max = workout.get_time(diff)
         self.time_passed = 0
-        self.__sound = vlc.MediaPlayer("countdown.mp3")
+        self.__sound = vlc.MediaPlayer(self.DEFAULT_COUNTDOWN_SOUND)
         self.next_exercise(None)
         self.ids["current-set"].text = "Set: " + str(self.__current_set+1) + " / " + str(self.__sets_count)
 
@@ -295,7 +256,7 @@ class ExerciseScreen(Screen):
         self.__current_set += 1
         # End of sets - end of workout
         if self.__current_set >= self.__sets_count:
-            print("Workout finished")
+            self.end_of_workout()
             return
         # Reset exercises
         self.__current_ex = 0
@@ -303,16 +264,19 @@ class ExerciseScreen(Screen):
         # Display break between sets
         exercise = workouts.all_exercises["Break sets"]
         self.display_exercise(exercise)
+        # Start next exercise
         self.start_exercise(self.__workout.get_break(self.__diff, self.__current_set-1))
+        # Display next set
         self.ids["current-set"].text = "Set: " + str(self.__current_set+1) + " / " + str(self.__sets_count)
 
+    # Start counting
     def start_counter(self, value):
         self.timer_prop = self.format_time(value)
         self.timer_val = value
         # Every second
         self.counter_event = Clock.schedule_interval(self.update_timer, 1)
 
-    # Stop timer
+    # Stop counting and cancel audio event
     def stop_timer(self):
         if self.counter_event is not None:
             self.counter_event.cancel()
@@ -343,14 +307,42 @@ class ExerciseScreen(Screen):
         else:
             return str(value)
 
+    # Show information about exercise, name, description, image
     def display_exercise(self, exercise):
         panel = self.ids["exercise-content"]
         panel.add_widget(Label(text=""))
-        name = Label(text=exercise.name, font_size=36)
+        name = Label(text=exercise.name, font_size=36, padding=(10, 10))
+        #self.ids["exercise-scroll"].scroll_to(name)
         panel.add_widget(name)
-        if exercise.description is not None:
-            description = Label(text=exercise.description, font_size=18)
+
+        if exercise.description != "":
+            description = Label(text=exercise.description, padding=(10, 10), font_size=18)
+            description.text_size = (500, 150)
             panel.add_widget(description)
+        if exercise.img != "img/":
+            image = AsyncImage(source=exercise.img, pos_hint={'center_x': .5, 'top_y': 1}, size_hint=(None, None),
+                               size=self.size)
+            self.ids["ex-img"] = image
+            panel.add_widget(image)
+
+        else:
+            panel.add_widget(Label(text=""))
+
+    def on_size(self, *args):
+        image = self.ids.get("ex-img", None)
+        if image is not None and image.source != "img/":
+            image.size = self.size
+
+    # Move to workout end screen
+    def end_of_workout(self):
+        sound = vlc.MediaPlayer(self.DEFAULT_WORKOUT_END_SOUND)
+        # Delete old end screen
+        if self.manager.has_screen("workout-end"):
+            self.manager.remove_widget(self.manager.get_screen("workout-end"))
+        self.manager.add_widget(WorkoutEndScreen(name="workout-end", workout=self.__workout))
+        # Play end sound
+        sound.play()
+        self.manager.current = "workout-end"
 
 
 # Used to display progress bar for workout
@@ -379,6 +371,15 @@ class BackgroundColor(Widget):
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
+
+
+# End of workout
+class WorkoutEndScreen(Screen):
+    __workout = None
+
+    def __init__(self, workout, **kwargs):
+        super().__init__(**kwargs)
+        self.__workout = workout
 
 
 # Profile options, data and statistics

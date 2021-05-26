@@ -3,10 +3,10 @@ import json
 from user import User, Account
 from workouts import Exercise, Workout, Break
 
-DEFAULT_ACCOUNTS_FILE = "accounts.json"
-DEFAULT_USER_FILE = "users.json"
-DEFAULT_EXERCISES_FILE = "exercises.json"
-DEFAULT_WORKOUTS_FILE = "workouts.json"
+DEFAULT_ACCOUNTS_FILE = "data/accounts.json"
+DEFAULT_USER_FILE = "data/users.json"
+DEFAULT_EXERCISES_FILE = "data/exercises.json"
+DEFAULT_WORKOUTS_FILE = "data/workouts.json"
 
 
 # Returns dictionary (login, password)

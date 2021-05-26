@@ -1,0 +1,208 @@
+{
+    "workouts": [
+        {
+            "name": "Push ups variations",
+            "difficulty": [
+                0,
+                1
+            ],
+            "description": "No equipment needed",
+            "sets_breaks_0": [
+                180,
+                180,
+                180
+            ],
+            "sets_0": [
+                [
+                    "Basic push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    40,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Prowler push ups",
+                    40,
+                    "Break",
+                    20
+                ],
+                [
+                    "Basic push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    40,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Prowler push ups",
+                    40,
+                    "Break",
+                    20
+                ],
+                [
+                    "Basic push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    40,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Prowler push ups",
+                    40,
+                    "Break",
+                    20
+                ]
+            ],
+            "sets_breaks_1": [
+                140,
+                140,
+                140
+            ],
+            "sets_1": [
+                [
+                    "Basic push ups",
+                    55,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    55,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    55,
+                    "Break",
+                    20,
+                    "Cliffhanger push ups",
+                    55,
+                    "Break",
+                    20
+                ],
+                [
+                    "Basic push ups",
+                    55,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    55,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    55,
+                    "Break",
+                    20,
+                    "Cliffhanger push ups",
+                    55,
+                    "Break",
+                    20
+                ],
+                [
+                    "Basic push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Knee plank ups",
+                    40,
+                    "Break",
+                    20,
+                    "Side step push ups",
+                    40,
+                    "Break",
+                    20,
+                    "Prowler push ups",
+                    40,
+                    "Break",
+                    20
+                ]
+            ]
+        },
+        {
+            "name": "Pull ups variations",
+            "difficulty": [
+                0
+            ],
+            "description": "Workout requires pull up bar and some other equipment depending on exercise",
+            "sets_breaks_0": [
+                240,
+                300,
+                300
+            ],
+            "sets_0": [
+                [
+                    "Basic pull ups",
+                    50,
+                    "Break",
+                    60,
+                    "1/2 pull ups",
+                    40,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    40,
+                    "Break",
+                    60,
+                    "Basic pull ups",
+                    30,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    30,
+                    "Break",
+                    60
+                ],
+                [
+                    "Basic pull ups",
+                    50,
+                    "Break",
+                    60,
+                    "1/2 pull ups",
+                    40,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    40,
+                    "Break",
+                    60,
+                    "Basic pull ups",
+                    30,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    30,
+                    "Break",
+                    60
+                ],
+                [
+                    "Basic pull ups",
+                    50,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    40,
+                    "Break",
+                    60,
+                    "Basic pull ups",
+                    30,
+                    "Break",
+                    60,
+                    "Chin ups",
+                    30
+                ]
+            ]
+        }
+    ]
+}

@@ -443,11 +443,13 @@
                     max: root.progress_max
                     value: root.time_passed
         ScrollView:
+            id: exercise-scroll
             bar_width: 20
             BoxLayout:
                 id: exercise-content
                 size_hint: 1, None
-                spacing: "40dp"
+                padding: "20dp"
+                spacing: "30dp"
                 height: self.minimum_height
                 orientation: "vertical"
 
@@ -469,9 +471,49 @@
                 on_press: root.next_exercise(None)
                 background_color: 0, 1, 0, 1
 
+<WorkoutEndScreen>:
+    BoxLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        AnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+            BackgroundLabel:
+                size_hint: .5, None
+                background_color: 50/255, 50/255, 50/255, 1
+                text: "Congratulations, you've completed your workout!"
+                text_size: self.width, None
+                height: self.texture_size[1]
+                minimum_height: 300
+                halign: "center"
+                valign: "center"
+                font_size: 26
+        AnchorLayout:
+            Button:
+                size_hint: .5, .5
+                text: "Menu"
+                font_size: 38
+                on_press: root.manager.transition.direction = "up"
+                on_press: root.manager.current = "menu-main"
+
 <ProfileScreen>:
-    Button:
-        text: "Menu"
-        font_size: (self.height / 15) * 6
-        on_press: root.manager.transition.direction = "up"
-        on_press: root.manager.current = "menu-main"
+    AnchorLayout:
+        canvas:
+            Color:
+                rgb: 128/255, 128/255, 128/255
+            Rectangle:
+                size: self.size
+        orientation: "vertical"
+        BackgroundLabel:
+            text: "You've completed full workout!"
+            background_color: 50/255, 50/255, 50/255, 1
+        Button:
+            size_hint: .5, .5
+            text: "Menu"
+            font_size: 38
+            on_press: root.manager.transition.direction = "up"
+            on_press: root.manager.current = "menu-main"

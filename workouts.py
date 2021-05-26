@@ -43,7 +43,7 @@ class Exercise:
 
     @property
     def img(self):
-        return self.__img
+        return "img/" + self.__img
 
     @img.setter
     def img(self, new_img):

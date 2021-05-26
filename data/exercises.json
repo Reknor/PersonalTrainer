@@ -1,0 +1,149 @@
+{
+    "exercises": [
+        {
+            "name": "Break",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Break sets",
+            "description": "Take rest between sets",
+            "img": ""
+        },
+        {
+            "name": "Basic push ups",
+            "description": "Place your hands on shoulders' width. Keep elbows close to your body.",
+            "img": "basic-push-ups.png"
+        },
+        {
+            "name": "Knee plank ups",
+            "description": "Place your hands on shoulders' width. Hands straight. Lower each of your forearms and come back.",
+            "img": "knee-plank-ups.png"
+        },
+        {
+            "name": "Side step push ups",
+            "description": "",
+            "img": "side-step-push-ups.png"
+        },
+        {
+            "name": "Prowler push ups",
+            "description": "Do regular push up, but bring your knee to the elbow.",
+            "img": "prowler-push-ups.png"
+        },
+        {
+            "name": "Cliffhanger push ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Basic pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Chin ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "1/2 pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Hanging bat pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Angled pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Commando pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Spiderman pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Switch grip pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Front lever pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "One arm pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Plyo pull ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Plyo release push ups",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Air squats",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Bridge marches",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Bodyweight swings",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Adductor hip slides",
+            "description": "Squat on one leg while leaning on another",
+            "img": ""
+        },
+        {
+            "name": "Reverse lunges",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Sprinter lunges",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Jump squats",
+            "description": "",
+            "img": ""
+        },
+        {
+            "name": "Never ending squats",
+            "description": "Always keep tension on legs. Never go all the way to the top",
+            "img": ""
+        },
+        {
+            "name": "Hamstring RDL",
+            "description": "Stand on one leg and lean forward to touch the ground",
+            "img": ""
+        },
+        {
+            "name": "Hamstring RDL",
+            "description": "Stand on one leg and lean forward to touch the ground",
+            "img": ""
+        }
+    ]
+}
