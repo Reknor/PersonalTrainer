@@ -14,10 +14,11 @@ from functools import partial
 import os
 
 import workouts
-from workouts import *
+from workouts import Workout, Exercise, all_workouts, all_exercises, initialize_data
 
 # vlc path
 os.add_dll_directory("C:\Program Files\VideoLAN\VLC")
+
 
 # Create all workouts
 def initialize_workouts():
@@ -132,7 +133,7 @@ class WorkoutsScreen(Screen):
     # Update dropdown menu to match workouts dict
     def update_workouts_dropdown(self):
         dropdown = self.ids["select-workout"]
-        dropdown.values = list(all_workouts)
+        dropdown.values = list(workouts.all_workouts)
 
     # Select first workout and update text
     def select_default_workout(self):
@@ -172,7 +173,6 @@ class WorkoutDisplay(BoxLayout):
     def show(self, workout, difficulty):
         # Get all exercises for given difficulty
         exercises = workout.exercises(difficulty)
-
         # Remove all previously shown items
         self.clear_widgets()
         self.spacing = dp(40)
@@ -186,7 +186,7 @@ class WorkoutDisplay(BoxLayout):
         sets_box.add_widget(Label(text="", size_hint=(1, 1), font_size=18))
         sets_box.add_widget(Label(text="Sets : ", size_hint=(1, 1), font_size=18))
         # Label displaying value
-        sets_label = Label(text=str(workout.sets_count), size_hint=(1, 1), font_size=18, halign="left")
+        sets_label = Label(text=str(workout.sets_count(difficulty)), size_hint=(1, 1), font_size=18, halign="left")
         sets_box.add_widget(sets_label)
         sets_label.bind(size=sets_label.setter('text_size'))
 
@@ -209,7 +209,11 @@ class WorkoutDisplay(BoxLayout):
         self.add_widget(Label(text=""))
         # Exercises information
         for j in range(0, len(exercises)):
-
+            # Row box
+            set_row = BoxLayout()
+            set_row.add_widget(Label(text=("Set: " + str(j + 1)), size_hint=(None, 1), width=dp(100), font_size=18))
+            self.add_widget(set_row)
+            ex_num = 1
             for i in range(0, len(exercises[j])):
                 # Row box
                 exercise_row = BoxLayout()
@@ -218,10 +222,11 @@ class WorkoutDisplay(BoxLayout):
 
                 ex = exercises[j][i]
                 # Format output depending on type
-                if type(ex[0]) is Break:
+                if type(ex[0]) is workouts.Break:
                     label = Label(text="-            " + str(ex[1]) + "s    " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
                 else:
-                    label = Label(text=str(int(i/2)+1) + ".    " + str(ex[1]) + "s   " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+                    label = Label(text=str(ex_num) + ".    " + str(ex[1]) + "s   " + ex[0].name, size_hint=(1, 1), halign="left", font_size=18)
+                    ex_num += 1
 
                 label.bind(size=label.setter('text_size'))
                 exercise_row.add_widget(label)
@@ -232,32 +237,38 @@ class WorkoutDisplay(BoxLayout):
 # Displays current exercise
 class ExerciseScreen(Screen):
     __workout = None  # selected workout
-    __diff = 0  # difficulty level
-    __ex_count = 0  # number of exercises
-    __current_ex = 0  # current exercise index
-    __sets_left = 0  # number of sets left
-    __sets_break = 0  # break between sets
+    __diff: int  # difficulty level
+    __ex_count: int  # number of exercises on each set
+    __current_ex: int  # current exercise index
+    __sets_count: int  # total number of sets
+    __current_set: int  # current set
 
     timer_prop = StringProperty("10")
-    timer_val = 10
+    timer_val: int
     counter_event = None
 
-    __sound = None
+    __sound = None  # sound played 3 seconds before exercise or break ends
 
     def __init__(self, workout, diff, **kwargs):
         super().__init__(**kwargs)
 
+        self.timer_val = 10
+        print(workout.get_time(diff))
+        print(workout)
         self.__workout = workout
         self.__diff = diff
-        self.__ex_count = len(workout.exercises(diff))
-        self.__sets_left = workout.sets_count
-        self.__sets_break = workout.sets_break
+        self.__current_ex = 0
+        self.__current_set = 0
+        self.__ex_count = len(workout.exercises(diff)[self.__current_set])
+        print(workout.exercises(diff)[0])
+        self.__sets_count = workout.sets_count(diff)
         self.__sound = vlc.MediaPlayer("countdown.mp3")
         self.next_exercise(None)
 
     def start_exercise(self, time):
         self.start_counter(time)
 
+    # Start next exercise, if all exercises finished move to next set
     def next_exercise(self, dt):
         self.ids['exercise-content'].clear_widgets()
         self.stop_timer()
@@ -265,24 +276,30 @@ class ExerciseScreen(Screen):
         if self.__current_ex >= self.__ex_count:
             self.next_set()
             return
-        exercise, time = self.__workout.exercises(self.__diff)[self.__current_ex]
+        exercise, time = self.__workout.exercises(self.__diff)[self.__current_set][self.__current_ex]
         self.display_exercise(exercise)
         self.start_exercise(time)
-
+        print("curr_ex: " + str(self.__current_ex))
+        print("ex_count: " + str(self.__ex_count))
+        print("cur_set: " + str(self.__current_set))
+        print(", total_sets: " + str(self.__sets_count))
         self.__current_ex += 1
 
+    # Start new set, if all sets finished end workout
     def next_set(self):
-        self.__sets_left -= 1
-        # End of sets
-        if self.__sets_left <= 0:
+        self.__current_set += 1
+        # End of sets - end of workout
+        print("cur_set: " + str(self.__current_set) + ", total_sets: " + str(self.__sets_count))
+        if self.__current_set >= self.__sets_count:
             print("Workout finished")
             return
         # Reset exercises
         self.__current_ex = 0
+        self.__ex_count = len(self.__workout.exercises(self.__diff)[self.__current_set])
         # Display break
-        exercise = all_exercises["Break"]
+        exercise = workouts.all_exercises["Break"]
         self.display_exercise(exercise)
-        self.start_exercise(self.__sets_break)
+        self.start_exercise(self.__workout.get_break(self.__diff, self.__current_set-1))
 
     def start_counter(self, value):
         self.timer_prop = self.format_time(value)

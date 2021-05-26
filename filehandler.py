@@ -61,6 +61,7 @@ def read_exercises(filepath=DEFAULT_EXERCISES_FILE):
     except (IOError, FileNotFoundError, OSError, ValueError):
         return None
 
+
 # Read all workouts, remember to call read_exercises before or workout initialization will fail
 def read_workouts(filepath=DEFAULT_WORKOUTS_FILE):
     try:

@@ -1,6 +1,6 @@
-# Contains all available exercises, every exercise has unique name which is a key in dictionary
 import filehandler
 
+# Contains all available exercises, every exercise has unique name which is a key in dictionary
 all_exercises = {}
 # Contains all available workouts, every workout has unique name which is a key in dictionary
 all_workouts = {}
@@ -67,27 +67,22 @@ class Workout:
 
     __name: str
     __difficulty: list[int]  # List of available difficulties for this workout
-    __sets_count: int  # How many times all exercises are repeated
     __description: str
-    # List of  pairs <exercise, duration> lists, each list contains exercises for one difficulty level, 0 - easiest
-    #__exercises: [[]]
 
     # Dictionary with 2 key types:
     # sets_breaks_n - list of ints (break between sets in seconds), n is difficulty number
     # sets_n - list of list of pairs <exercise, duration>, n is difficulty number
-    __exercises = {}
+    __exercises: dict
 
     # Initialize workouts from json object
     def __init__(self, json):
         self.__name = json['name']
         self.__difficulty = json['difficulty']
-        self.__sets_count = len(self.__difficulty)
-
+        self.__exercises = {}
         # Read breaks and exercises information
         for diff in self.__difficulty:
             b = 'sets_breaks_' + str(diff)
             self.__exercises[b] = json[b]
-
             # For every set
             set_list = []
             for ex_set in json['sets_' + str(diff)]:
@@ -96,22 +91,21 @@ class Workout:
                 for i in range(0, len(ex_set), 2):
                     # Map exercise name with exercise and duration
                     pair = (all_exercises[ex_set[i]], ex_set[i+1])
-                    # Add exercise and time to set cycle
+                    # Add exercise and duration to one set
                     ex_list.append(pair)
-                # Add set cycle to set
+                # Add set to all sets
                 set_list.append(ex_list)
             # Add set to difficulty
             self.__exercises['sets_' + str(diff)] = set_list
-
         self.__description = json['description']
 
     def __str__(self):
-        text = self.name + " sets: " + str(self.sets_count) + "\n"
+        text = self.name + " difficulties: " + str(len(self.__difficulty)) + "\n"
         i = 0
-        for k in self.all_exercises.keys():
+        for k in self.__exercises.keys():
             if i % 2 == 0:
                 text += "Breaks: "
-            exercises_list = self.all_exercises[k]
+            exercises_list = self.__exercises[k]
             for exercise in exercises_list:
                 text += str(exercise) + ", "
             text += "\n"
@@ -131,17 +125,10 @@ class Workout:
             raise ValueError("Workout name cannot be empty")
         self.__name = new_name
 
-    @property
-    def sets_count(self):
-        return self.__sets_count
+    def sets_count(self, diff):
+        return len(self.__exercises["sets_" + str(diff)])
 
-    @sets_count.setter
-    def sets_count(self, new_sets: int):
-        if new_sets <= 0:
-            raise ValueError("Number of sets must be positive")
-        self.__sets_count = new_sets
-
-    def get_break(self,difficulty, set_num):
+    def get_break(self, difficulty, set_num):
         return self.__exercises["sets_breaks_" + str(difficulty)][set_num]
 
     def get_breaks(self, difficulty):
@@ -174,10 +161,23 @@ class Workout:
             return None
         return self.__exercises["sets_" + str(difficulty)]
 
+    # Returns total time required to finish workout
+    def get_time(self, difficulty):
+        total_time = 0
+        exercises = self.exercises(difficulty)
+        breaks = self.get_breaks(difficulty)
+        i = 0
+        for li in exercises:
+            for e in li:
+                total_time += e[1]
+            total_time += breaks[i]
+            i += 1
+        return total_time
+
     # Returns pair <value, text> describing available difficulties for workout
     def get_difficulties(self):
         diff = []
-        for i in range(0, len(self.all_exercises)):
+        for i in self.__difficulty:
             if i == 0:
                 text = "Beginner"
             elif i == 1:
