@@ -196,8 +196,8 @@ class WorkoutDisplay(BoxLayout):
 
 # Displays current exercise
 class ExerciseScreen(Screen):
-    DEFAULT_COUNTDOWN_SOUND = "media/countdown.mp3"
-    DEFAULT_WORKOUT_END_SOUND = "media/end.mp3"
+    DEFAULT_COUNTDOWN_SOUND = "media/countdown.mp3"  # path to audio file
+    DEFAULT_WORKOUT_END_SOUND = "media/end.mp3"  # path to audio file
 
     __workout = None  # selected workout
     __diff: int  # difficulty level
@@ -206,11 +206,11 @@ class ExerciseScreen(Screen):
     __sets_count: int  # total number of sets
     __current_set: int  # current set
 
-    progress_max = NumericProperty(0)
-    time_passed = NumericProperty(0)
-    timer_prop = StringProperty("10")
-    timer_val: int
-    counter_event = None
+    progress_max = NumericProperty(0)  # displayed in progress bar total time for current workout (for kv file)
+    time_passed = NumericProperty(0)  # displayed in progress bar time from starting workout (for kv file)
+    timer_prop = StringProperty("10")  # displayed timer value (for kv file)
+    timer_val: int  # displayed timer value
+    counter_event = None  # reference to function performed every counter tick
 
     __sound = None  # sound played 3 seconds before exercise or break ends
 
@@ -236,15 +236,18 @@ class ExerciseScreen(Screen):
 
     # Start next exercise, if all exercises finished move to next set
     def next_exercise(self, dt):
+        # Prepare for the next exercise
         self.ids['exercise-content'].clear_widgets()
         self.stop_timer()
 
-        # Add to progress bar
+        # Add remaining time to progress bar
         self.time_passed += self.timer_val
+
         # End of set
         if self.__current_ex >= self.__ex_count:
             self.next_set()
             return
+        # Get next exercise and time
         exercise, time = self.__workout.exercises(self.__diff)[self.__current_set][self.__current_ex]
         self.display_exercise(exercise)
         self.start_exercise(time)
@@ -272,7 +275,7 @@ class ExerciseScreen(Screen):
     def start_counter(self, value):
         self.timer_prop = self.format_time(value)
         self.timer_val = value
-        # Every second
+        # Schedule every second
         self.counter_event = Clock.schedule_interval(self.update_timer, 1)
 
     # Stop counting and cancel audio event
@@ -283,14 +286,17 @@ class ExerciseScreen(Screen):
 
     def update_timer(self, dt):
         val = self.timer_val
+        # Start playing countdown sound
         if val == 3:
             Clock.schedule_once(self.play_countdown)
+        # End of exercise
         elif val == 0:
             self.counter_event.cancel()
             self.counter_event = None
             Clock.schedule_once(self.next_exercise)
         self.time_passed += 1
         self.timer_val -= 1
+        # Display new time
         self.timer_prop = self.format_time(val)
 
     # Wrapper function for playing counter sound
@@ -322,7 +328,6 @@ class ExerciseScreen(Screen):
                                size=self.size)
             self.ids["ex-img"] = image
             panel.add_widget(image)
-
         else:
             panel.add_widget(Label(text=""))
 
